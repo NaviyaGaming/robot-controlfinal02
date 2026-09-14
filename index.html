@@ -695,6 +695,7 @@
       }
 
       // ═══════════════════ PEERJS — RECEIVE CAMERA ═══════════════════
+
       function connectCamera() {
         const rid = document.getElementById("robotEyeId").value.trim();
         if (!rid) {
@@ -757,7 +758,6 @@
         log("Face tracking started ✓", "ok");
         detectLoop();
       }
-
       // ═══════════════════ MODELS ═══════════════════
       async function loadModels() {
         if (faceapi.nets.tinyFaceDetector.isLoaded) return;

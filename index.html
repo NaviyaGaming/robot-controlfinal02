@@ -705,12 +705,19 @@
         peer = new Peer();
         peer.on("open", () => {
           log("Peer ready — calling robot camera…");
-          // call robot phone — it answers with its camera stream
-          const call = peer.call(rid, null);
+
+          // THE FIX: Create a blank, empty video stream to trick WebRTC into opening the connection
+          const dummyCanvas = document.createElement("canvas");
+          const dummyStream = dummyCanvas.captureStream(1); // 1 FPS empty stream
+
+          // Call robot phone using the dummy stream instead of 'null'
+          const call = peer.call(rid, dummyStream);
+
           call.on("stream", (stream) => {
             remoteVideo.srcObject = stream;
             remoteVideo.style.display = "block";
             document.getElementById("noFeed").style.display = "none";
+
             // sync overlay size once video metadata loads
             remoteVideo.onloadedmetadata = () => {
               overlay.width = remoteVideo.videoWidth;
@@ -722,8 +729,10 @@
             document.getElementById("cmdlabel").textContent = "CAM CONNECTED";
             log("Camera feed live ✓", "ok");
           });
+
           call.on("error", (e) => log("Call error: " + e, "warn"));
         });
+
         peer.on("error", (e) => log("Peer: " + e.type, "warn"));
       }
 
